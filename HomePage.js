@@ -25,7 +25,7 @@ export default class HomePage extends Component {
       alert('ID Not Valid');
     }
     //pushes to map page and renders the inputted value
-    this.props.navigator.push(Router.getRoute('test',{data: this.state.value}));
+    this.props.navigator.push(Router.getRoute('test',{id: this.state.value}));
   }
 
 
@@ -38,15 +38,15 @@ export default class HomePage extends Component {
             style={styles.landingImg}
           />
           <Text style= {styles.logoStyling}>TESTit</Text>
-          <Text style= {styles.sloganStyling}>a cancer test trial app</Text>
+          <Text style= {styles.sloganStyling}>for my cancer's 2nd opinion</Text>
         </View>
 
-      <View style={styles.searchCity}>
+      <View style={styles.searchDisease}>
         <TextInput
           style={styles.textInput}
           placeholder='Enter ID'
           onChangeText={(value) => this.setState({value})}
-          value={this.state.city}
+          value={this.state.value}
         />
       </View>
 
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     width:600
   },
 
-  searchCity: {
+  searchDisease: {
     flexDirection:'row',
     marginTop: 30,
     justifyContent:'center',

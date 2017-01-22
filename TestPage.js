@@ -2,10 +2,8 @@ import React from 'react';
 import { StyleSheet, View, Text,TextInput, Dimensions, TouchableOpacity } from 'react-native';
 import HomePage from './HomePage';
 import Button from 'react-native-button';
-import axios from 'axios';
+import Router from './Router';
 import InfoPage from './InfoPage';
-
-
 
 
 export default class TestPage extends React.Component {
@@ -17,60 +15,33 @@ export default class TestPage extends React.Component {
 constructor(props) {
   super(props);
   this.state = {
-    data: {},
-    // disease: []
   }
 }
 
-componentDidMount() {
-  this.getData()
-  // this.getDisease()
+
+goToInfo() {
+  if (this.state.value === '' || this.state.value === null || this.state.value === 'undefined'){
+    alert('Please Go Back and Enter City');
+  }
+  //pushes to map page and renders the inputted value
+  this.props.navigator.push(Router.getRoute('info',{id: this.props.route.params.id, city: this.state.city}));
 }
-
-getData() {
-  axios.get("https://clinicaltrialsapi.cancer.gov/v1/clinical-trials?diseases.nci_thesaurus_concept_id="+ this.props.route.params.data)
-  .then((response)=> {
-    let newData = response.data;
-    console.log(newData);
-    this.setState({
-      data: newData
-    })
-  })
-  .catch(function (error) {
-  console.log(error);
-  })
-}
-
-// getDisease() {
-//   axios.get("https://clinicaltrialsapi.cancer.gov/v1/terms?term="+ this.props.route.params.disease + "%20n")
-//   .then((response)=> {
-//     let newDisease = response.data.terms.codes;
-//     console.log(newDisease);
-//     this.setState({
-//       disease: newDisease
-//     })
-//   })
-//   .catch(function (error) {
-//   console.log(error);
-//   })
-// }
-
 
 //back button functionality
 _goBackHome() {
   this.props.navigator.pop();
 }
 
+
   render(){
     return(
       <View style={styles.container}>
-        { (this.state.data.trials && this.state.data.trials.length>1) ? <InfoPage  /> : null }
-        <Text style={styles.locationText}>Find Testing Locations</Text>
+        <Text style={styles.locationText}>Find 2nd Opinions</Text>
         <View style={styles.searchCity}>
           <TextInput
             style={styles.textInput}
             placeholder='Enter City'
-            onChangeText={(value) => this.setState({value})}
+            onChangeText={(city) => this.setState({city})}
             value={this.state.city}
           />
         </View>
@@ -79,8 +50,7 @@ _goBackHome() {
           <Button
             style={styles.buttonStyling}
             styleDisabled={{color: 'red'}}
-            // onPress={this.goToMap.bind(this)}>Search
-            >Search
+            onPress={this.goToInfo.bind(this)}>Search
           </Button>
         </View>
 
