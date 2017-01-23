@@ -37,14 +37,14 @@ export default class HomePage extends Component {
             source={require('./sunrise.jpg')}
             style={styles.landingImg}
           />
-          <Text style= {styles.logoStyling}>TESTit</Text>
-          <Text style= {styles.sloganStyling}>for my cancer's 2nd opinion</Text>
+          <Text style={styles.logoStyling}>Diagnosed?</Text>
+          <Text style={styles.sloganStyling}>get a second opinion</Text>
         </View>
 
       <View style={styles.searchDisease}>
         <TextInput
           style={styles.textInput}
-          placeholder='Enter ID'
+          placeholder='Enter Cancer ID #'
           onChangeText={(value) => this.setState({value})}
           value={this.state.value}
         />

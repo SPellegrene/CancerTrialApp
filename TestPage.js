@@ -4,6 +4,7 @@ import HomePage from './HomePage';
 import Button from 'react-native-button';
 import Router from './Router';
 import InfoPage from './InfoPage';
+import axios from 'axios';
 
 
 export default class TestPage extends React.Component {
@@ -15,7 +16,35 @@ export default class TestPage extends React.Component {
 constructor(props) {
   super(props);
   this.state = {
+    data:{
+      diseases: [{'preferred_name':'Cancer Name...'}],
+      brief_summary:'Loading Summary...'
+    },
+    city: '',
+    sites: []
   }
+}
+
+componentDidMount() {
+  this.getInfo()
+}
+
+  getInfo(){
+   axios.get("https://clinicaltrialsapi.cancer.gov/v1/clinical-trials?diseases.nci_thesaurus_concept_id=" + this.props.route.params.id)
+   .then((response) => {
+     console.log(response.data)
+     let newData = response.data.trials[0]
+     let newSites = newData.sites
+     console.log(newData.diseases[0])
+     console.log(newSites)
+     this.setState({
+       data: newData,
+       sites: newSites
+   })
+   })
+   .catch(function (error) {
+   console.log(error);
+  })
 }
 
 
@@ -24,7 +53,7 @@ goToInfo() {
     alert('Please Go Back and Enter City');
   }
   //pushes to map page and renders the inputted value
-  this.props.navigator.push(Router.getRoute('info',{id: this.props.route.params.id, city: this.state.city}));
+  this.props.navigator.push(Router.getRoute('info',{sites: this.state.sites, city: this.state.city}));
 }
 
 //back button functionality
@@ -35,8 +64,14 @@ _goBackHome() {
 
   render(){
     return(
+
       <View style={styles.container}>
+        <Text style= {styles.logoStyling}>Diagnosed?</Text>
+        <Text style={styles.testName}>{this.state.data.diseases[0].preferred_name}</Text>
+        <Text style={styles.testSummary}>{this.state.data.brief_summary}</Text>
+        {/* <Text data={this.state.data}></Text> */}
         <Text style={styles.locationText}>Find 2nd Opinions</Text>
+        {/* <Text>It is {response.data}</Text> */}
         <View style={styles.searchCity}>
           <TextInput
             style={styles.textInput}
@@ -80,6 +115,31 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: '#FED69B',
   },
+
+  logoStyling: {
+    backgroundColor:'transparent',
+    fontSize:32,
+    color:'white',
+    fontWeight: '300'
+  },
+
+  testName: {
+    padding:15,
+    fontWeight:'bold',
+    alignSelf: 'center',
+    marginBottom:10,
+    marginTop:10
+  },
+
+  testSummary: {
+    padding:10,
+    marginBottom: 50,
+    borderWidth:1,
+    borderRadius:10,
+    borderColor: '#8E8C8B',
+    width:350
+  },
+
 
   locationText: {
     color:'#8E8C8B',
@@ -138,9 +198,5 @@ const styles = StyleSheet.create({
     height:40,
     paddingTop:6
     // width:100
-  }
-
-
-
-
+  },
 })

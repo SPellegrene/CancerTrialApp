@@ -14,24 +14,26 @@ export default class InfoPage extends React.Component {
 
   constructor(props) {
     super(props);
-    console.log('infopage');
+    // console.log('infopage');
     this.state = {
-      data: []
+      data: [],
+        latitude: this.props.sites[0].org_coordinates.lat,
+        longitude:this.props.sites[0].org_coordinates.lon
     }
   }
 
   componentDidMount() {
      this.getData();
+     this.setState({
+         latitude: this.props.sites[0].org_coordinates.lat,
+         longitude:this.props.sites[0].org_coordinates.lon
+     })
    }
 
   getData() {
-    console.log('city', this.props.route.params.city)
-
-     // Lat and long here need to be looked up instead of hard coded
-    console.log("https://clinicaltrialsapi.cancer.gov/v1/clinical-trials?sites.org_coordinates_lat=39.1292&sites.org_coordinates_lon=-77.2953&sites.org_coordinates_dist=20km&diseases.nci_thesaurus_concept_id="+ this.props.route.params.id);
-      axios.get("https://clinicaltrialsapi.cancer.gov/v1/clinical-trials?sites.org_coordinates_lat=39.1292&sites.org_coordinates_lon=-77.2953&sites.org_coordinates_dist=20km&diseases.nci_thesaurus_concept_id="+ this.props.route.params.id)
+    console.log(this.props.route.params.sites[0].org_coordinates)
+      axios.get("https://clinicaltrialsapi.cancer.gov/v1/clinical-trials?sites.org_coordinates_lat="+this.state.latitude+"&sites.org_coordinates_lon="+this.state.longitude+"&sites.org_coordinates_dist=20km&diseases.nci_thesaurus_concept_id="+this.props.route.params.id)
       .then((response)=> {
-
         // The request above gets any trials with at least one sites within the geo range.
         let trialsNearbyWithAllSites = response.data.trials;
 
@@ -54,11 +56,12 @@ export default class InfoPage extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.data) {
       this.setState({
-        data:nextProps.data
-        // disease: nextProps.disease
+        data:nextProps.data,
+        sites:nextProps.sites
       })
     }
     console.log(nextProps.data)
+    console.log(nextProps.sites)
   }
 
 
