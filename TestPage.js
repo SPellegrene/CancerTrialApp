@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text,TextInput, Dimensions, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text,TextInput, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
 import HomePage from './HomePage';
 import Button from 'react-native-button';
 import Router from './Router';
@@ -17,13 +17,20 @@ constructor(props) {
   super(props);
   this.state = {
     data:{
-      diseases: [{'preferred_name':'Cancer Name...'}],
-      brief_summary:'Loading Summary...'
+      diseases: [{
+        preferred_name:'Cancer Name...',
+        brief_summary:'Loading Summary...',
+      }],
+      sites: [{
+        coords:{
+          lat:'',
+          lon:''
+        }
+      }],
     },
-    city: '',
-    sites: []
+    value: '',
+    }
   }
-}
 
 componentDidMount() {
   this.getInfo()
@@ -33,13 +40,15 @@ componentDidMount() {
    axios.get("https://clinicaltrialsapi.cancer.gov/v1/clinical-trials?diseases.nci_thesaurus_concept_id=" + this.props.route.params.id)
    .then((response) => {
      console.log(response.data)
-     let newData = response.data.trials[0]
-     let newSites = newData.sites
-     console.log(newData.diseases[0])
+     let newData = response.data.trials[0];
+     let newSites = newData.sites;
+     let newCoords = newSites[0].org_coordinates;
      console.log(newSites)
+     console.log(newCoords)
      this.setState({
        data: newData,
-       sites: newSites
+       sites: newSites,
+       coords: newCoords
    })
    })
    .catch(function (error) {
@@ -49,11 +58,11 @@ componentDidMount() {
 
 
 goToInfo() {
-  if (this.state.value === '' || this.state.value === null || this.state.value === 'undefined'){
-    alert('Please Go Back and Enter City');
-  }
+  // if (this.state.value === '' || this.state.value === 'undefined'){
+  //   alert('Invalid ID');
+  // }
   //pushes to map page and renders the inputted value
-  this.props.navigator.push(Router.getRoute('info',{sites: this.state.sites, city: this.state.city}));
+  this.props.navigator.push(Router.getRoute('info',{id: this.state.value, sites: this.state.sites, coords:this.state.coords}));
 }
 
 //back button functionality
@@ -65,22 +74,21 @@ _goBackHome() {
   render(){
     return(
 
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <Text style= {styles.logoStyling}>Diagnosed?</Text>
-        <Text style={styles.testName}>{this.state.data.diseases[0].preferred_name}</Text>
-        <Text style={styles.testSummary}>{this.state.data.brief_summary}</Text>
-        {/* <Text data={this.state.data}></Text> */}
+          <Text style={styles.testName}>{this.state.data.diseases[0].preferred_name}</Text>
+          <Text style={styles.testSummary}>{this.state.data.brief_summary}</Text>
         <Text style={styles.locationText}>Find 2nd Opinions</Text>
         {/* <Text>It is {response.data}</Text> */}
-        <View style={styles.searchCity}>
+        {/* <View style={styles.searchCity}>
           <TextInput
             style={styles.textInput}
-            placeholder='Enter City'
+            placeholder='Enter Cancer ID #'
             onChangeText={(city) => this.setState({city})}
             value={this.state.city}
           />
         </View>
-
+ */}
         <View style={styles.searchButton}>
           <Button
             style={styles.buttonStyling}
@@ -101,7 +109,7 @@ _goBackHome() {
           </TouchableOpacity>
         </View>
 
-      </View>
+      </ScrollView>
     )
   }
 }
@@ -110,17 +118,19 @@ const styles = StyleSheet.create({
 
   container: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+    // alignItems: 'center',
     flexDirection: 'column',
     backgroundColor: '#FED69B',
   },
+
 
   logoStyling: {
     backgroundColor:'transparent',
     fontSize:32,
     color:'white',
-    fontWeight: '300'
+    fontWeight: '300',
+    marginTop:30,
+    alignSelf: 'center'
   },
 
   testName: {
@@ -128,7 +138,8 @@ const styles = StyleSheet.create({
     fontWeight:'bold',
     alignSelf: 'center',
     marginBottom:10,
-    marginTop:10
+    marginTop:10,
+    fontWeight: '300'
   },
 
   testSummary: {
@@ -137,13 +148,15 @@ const styles = StyleSheet.create({
     borderWidth:1,
     borderRadius:10,
     borderColor: '#8E8C8B',
-    width:350
+    marginLeft:5,
+    marginRight:5,
+    // width:350
   },
-
 
   locationText: {
     color:'#8E8C8B',
-    marginBottom:-10
+    marginBottom:10,
+    alignSelf:'center'
   },
 
   searchCity: {
@@ -161,12 +174,8 @@ const styles = StyleSheet.create({
     backgroundColor:'#F0F0F0',
   },
 
-
   button: {
     width: 80,
-    // paddingHorizontal: 12,
-    // alignItems: 'center',
-    // marginHorizontal: 10,
     fontSize:22,
     color:'#8E8C8B',
     fontWeight: '200',
@@ -186,7 +195,6 @@ const styles = StyleSheet.create({
   },
 
   buttonStyling: {
-    // position:'relative',
     textAlign:'center',
     fontSize:20,
     color:'#8E8C8B',
@@ -197,6 +205,5 @@ const styles = StyleSheet.create({
     width:80,
     height:40,
     paddingTop:6
-    // width:100
   },
 })

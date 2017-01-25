@@ -1,8 +1,11 @@
 import React from 'react';
-import { StyleSheet, View, Text, Dimensions, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
 import TestPage from './TestPage';
 import axios from 'axios';
+import Button from 'react-native-button';
 import removeTrialSitesOutsideArea from './removeTrialSitesOutsideArea';
+import Router from './Router';
+import Autolink from 'react-native-autolink';
 
 
 export default class InfoPage extends React.Component {
@@ -14,85 +17,170 @@ export default class InfoPage extends React.Component {
 
   constructor(props) {
     super(props);
-    // console.log('infopage');
     this.state = {
-      data: [],
-        latitude: this.props.sites[0].org_coordinates.lat,
-        longitude:this.props.sites[0].org_coordinates.lon
+        sites: this.props.sites,
+        coords:this.props.coords
+      }
     }
-  }
 
-  componentDidMount() {
-     this.getData();
-     this.setState({
-         latitude: this.props.sites[0].org_coordinates.lat,
-         longitude:this.props.sites[0].org_coordinates.lon
-     })
-   }
+  // componentDidMount() {
+  //   this.setState({
+  //    sites: this.props.sites
+  //   })
+  //  }
 
-  getData() {
-    console.log(this.props.route.params.sites[0].org_coordinates)
-      axios.get("https://clinicaltrialsapi.cancer.gov/v1/clinical-trials?sites.org_coordinates_lat="+this.state.latitude+"&sites.org_coordinates_lon="+this.state.longitude+"&sites.org_coordinates_dist=20km&diseases.nci_thesaurus_concept_id="+this.props.route.params.id)
-      .then((response)=> {
-        // The request above gets any trials with at least one sites within the geo range.
-        let trialsNearbyWithAllSites = response.data.trials;
-
-        console.log('trials', response.data.trials);
-        let newData = removeTrialSitesOutsideArea(trialsNearbyWithAllSites, {
-          latitude: 39.1292,
-          longitude: -77.2953,
-          radius: 20000 // 20km might not be big enough. If changed also needs to be changed up in api calls
-        })
-        console.log('newdata', newData);
-        this.setState({
-          data: newData
-        })
-      })
-      .catch(function (error) {
-      console.log(error);
-    })
-  }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.data) {
       this.setState({
-        data:nextProps.data,
-        sites:nextProps.sites
+        sites:nextProps.sites,
+        coords:nextProps.coords
       })
-    }
-    console.log(nextProps.data)
     console.log(nextProps.sites)
+    console.log(nextProps.coords[0])
   }
 
+  _goBackHome() {
+    this.props.navigator.pop();
+  }
+
+  _goToMap() {
+    this.props.navigator.push(Router.getRoute('map',{coords:this.state.coords}));
+  }
 
   render() {
       return(
-        <View style={styles.dataContainer}>
-          <Text>Hello World</Text>
-          {this.props.trials && this.props.trials.length > 0 ? this.props.trials.map((trial) => {
-            return <Text>Trial</Text>
-          }) : null }
-        </View>
+        <ScrollView style={styles.dataContainer}>
+
+        {this.props.sites && this.props.sites.length > 0 ? this.state.sites.map((site) => {
+          return(
+            <View
+            key={site.id}
+            style={styles.locationCont}>
+              <Text style={styles.testDoc}>Dr. {site.contact_name}</Text>
+              <Text style={styles.testName}>{site.org_name}</Text>
+              <Autolink
+              style={styles.testPhone}
+              linkStyle={styles.testPhone}
+              text={site.contact_phone}
+              />
+              <Text style={styles.testAddress}>{site.org_address_line_1}</Text>
+              <Text style={styles.testState}>{site.org_city}</Text>
+              <Text style={styles.testCity}>{site.org_state_or_province}</Text>
+              <Button
+                style={styles.mapButton}
+                styleDisabled={{color: 'red'}}
+                onPress={() => this._goToMap()}>Press for Map
+              </Button>
+              <TouchableOpacity
+                  style={styles.bubble}
+                >
+                  <Button
+                    style={styles.button}
+                    styleDisabled={{color: 'red'}}
+                    onPress={() => this._goBackHome()}>Back
+                  </Button>
+                </TouchableOpacity>
+
+            </View>
+            )
+          }): null }
+
+
+        </ScrollView>
       )
-    // }
+    }
   }
-}
 
 const styles = StyleSheet.create({
 
   dataContainer: {
     flexDirection: 'column',
-    alignItems: 'center',
+    backgroundColor:'#FED69B'
+  },
 
+  locationCont: {
+    // borderWidth:1,
+    borderRadius:10,
+    // borderColor: '#8E8C8B',
+    marginTop:50,
+    marginLeft:3,
+    marginRight:3,
+    backgroundColor: '#4989B1',
+    marginBottom:10
+  },
+
+  button: {
+    width: 80,
+    fontSize:22,
+    color:'white',
+    fontWeight: '200',
+    marginTop:20,
+    alignSelf:'flex-end'
+  },
+
+  mapButton: {
+    width: 80,
+    flex:1,
+    flexDirection:'row',
+    alignSelf:'center',
+    fontSize:18,
+    color:'white',
+    fontWeight: '200',
+    marginTop:15,
+    marginBottom:10,
+    borderWidth:1,
+    borderRadius:10,
+    borderColor:'white'
   },
 
   testName: {
+    fontSize:18,
+    alignSelf: 'center',
+    textAlign: 'center',
+    marginTop:20,
+    fontWeight: '300',
+  },
+
+  testDoc: {
+    fontSize:22,
+    // fontWeight: 'bold',
+    alignSelf: 'center',
+    textAlign: 'center',
+    marginTop:20,
+    fontWeight: '300',
+  },
+
+  testPhone: {
     padding:15,
-    // borderWidth:1,
     fontWeight:'bold',
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     marginBottom:10,
-    marginTop:10
+    fontSize:32,
+    marginTop:10,
+    color:'white',
+    fontWeight: '200',
+  },
+
+  testAddress: {
+    alignSelf: 'center',
+    marginTop:20,
+    fontWeight: '300',
+  },
+
+  testCity: {
+    alignSelf: 'center',
+    marginBottom:5,
+    fontWeight: '300',
+  },
+
+  testState: {
+    alignSelf: 'center',
+    fontWeight: '300',
+  },
+
+  testCountry: {
+    alignSelf: 'center',
+    marginBottom:10
   },
 
   testSummary: {
@@ -102,10 +190,5 @@ const styles = StyleSheet.create({
     borderRadius:10,
     borderColor: '#8E8C8B',
     width:350
-
-  },
-
-  lineStyling: {
-    color: 'black'
   }
 })
