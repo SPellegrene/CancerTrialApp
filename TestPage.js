@@ -21,12 +21,9 @@ constructor(props) {
         preferred_name:'Cancer Name...',
         brief_summary:'Loading Summary...',
       }],
-      sites: [{
-        coords:{
-          lat:'',
-          lon:''
-        }
-      }],
+      sites: [{}],
+      coords:[0,1],
+      hospitals:[]
     },
     value: '',
     }
@@ -42,7 +39,7 @@ componentDidMount() {
      console.log(response.data)
      let newData = response.data.trials[0];
      let newSites = newData.sites;
-     let newCoords = newSites[0].org_coordinates;
+     let newCoords = newData.sites[0].org_coordinates;
      console.log(newSites)
      console.log(newCoords)
      this.setState({
@@ -50,19 +47,13 @@ componentDidMount() {
        sites: newSites,
        coords: newCoords
    })
-   })
-   .catch(function (error) {
-   console.log(error);
   })
 }
 
 
 goToInfo() {
-  // if (this.state.value === '' || this.state.value === 'undefined'){
-  //   alert('Invalid ID');
-  // }
   //pushes to map page and renders the inputted value
-  this.props.navigator.push(Router.getRoute('info',{id: this.state.value, sites: this.state.sites, coords:this.state.coords}));
+  this.props.navigator.push(Router.getRoute('info',{id: this.state.value, sites: this.state.sites, coords: this.state.coords}));
 }
 
 //back button functionality

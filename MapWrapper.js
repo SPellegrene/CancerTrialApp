@@ -1,8 +1,10 @@
 import React from 'react';
 import { StyleSheet, View, Text, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
-import MapView from 'react-native-maps';
+import MapView  from 'react-native-maps';
 import Button from 'react-native-button';
 import Router from './Router';
+import axios from 'axios';
+import InfoPage from './InfoPage';
 
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 const LATITUDE_DELTA= 0.0922;
@@ -12,39 +14,41 @@ const { width, height } = Dimensions.get('window');
 export default class MapWrapper extends React.Component {
 
   static route = {
-  title: 'map',
+  title: 'map'
 }
 
 constructor(props) {
   super(props);
   this.state = {
-      region:[{
-        latitude:this.props.coords,
-        longitude:this.props.coords
-      }],
-      coords:[{
-        latitude:this.props.coords,
-        longitude:this.props.coords
-      }]
-    }
+    region:{
+      latitude:this.props.sites[0].org_coordinates.lat,
+      longitude:this.props.sites[0].org_coordinates.lon,
+      latitudeDelta:LATITUDE_DELTA,
+      longitudeDelta:.0922,
+    },
   }
-
-  componentDidMount() {
-    this.setState({
-        latitudeDelta: .0922,
-        longitudeDelta: .0922,
-        })
-      }
-
-
-
-
-componentWillReceiveProps(nextProps) {
-    this.setState({
-      coords:nextProps.coords
-    })
-  console.log(nextProps.coords)
+  console.log(this.state.region)
 }
+
+componentDidMount() {
+  this.setState({
+    region:{
+      latitude:this.props.sites[0].org_coordinates.lat,
+      longitude:this.props.sites[0].org_coordinates.lon,
+      latitudeDelta:LATITUDE_DELTA,
+      longitudeDelta:.0922,
+    },    // org_coordinates:[0,1]
+  })
+}
+      // console.log(this.state.org_coordinates);
+
+
+// componentWillReceiveProps(nextProps) {
+//     this.setState({
+//       coords:nextProps.sites
+//     })
+//   console.log(nextProps.sites.org_coordinates)
+// }
 
 _goBackHome() {
   this.props.navigator.pop();
@@ -53,24 +57,26 @@ _goBackHome() {
 
   render(){
     return(
-      <View>
+      <View style={styles.map}>
 
+      {/* {this.props.sites && this.props.sites.length > 0 ? this.state.sites.map((site) => {
+        return( */}
         <MapView
-          provider={this.props.provider}
+          // key={site}
+          provider={this.state.provider}
           style={styles.map}
           region={{
-            latitude:this.props.coords,
-            longitude:this.props.coords,
-            latitudeDelta:this.state.latitudeDelta,
-            longitudeDelta:this.state.longitudeDelta
+            latitude:this.state.region.latitude,
+            longitude:this.state.region.longitude,
+            latitudeDelta:.0922,
+            longitudeDelta:.0922
           }}
           >
-          {/* {this.props.coords && this.props.coords.length > 0 ? this.state.coords.map((coord) => { */}
-            {/* return( */}
-              {/* )
-            }): null } */}
-
+          {console.log(this.state.region.latitude)}
+          {console.log(this.state.region.longitude)}
         </MapView>
+      {/* )
+    }): null } */}
 
         <Button
           style={styles.button}
@@ -90,16 +96,19 @@ MapWrapper.propTypes = {
 
 const styles = StyleSheet.create({
 
+  // mapCont:{
+  //   flexDirection: 'column'
+  // },
+
     map: {
       ...StyleSheet.absoluteFillObject,
-      height:500
+      // height:500
     },
     button: {
-      width: 80,
-      fontSize:32,
+      fontSize:22,
       color:'#8E8C8B',
       fontWeight: '200',
-      marginTop:20
+      marginTop:20,
     },
 
 })

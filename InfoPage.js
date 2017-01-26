@@ -23,28 +23,29 @@ export default class InfoPage extends React.Component {
       }
     }
 
-  // componentDidMount() {
-  //   this.setState({
-  //    sites: this.props.sites
-  //   })
-  //  }
+  componentDidMount() {
+    this.setState({
+     sites: this.props.sites
+    })
+    console.log(this.props.sites[0].org_coordinates)
+   }
 
 
-  componentWillReceiveProps(nextProps) {
-      this.setState({
-        sites:nextProps.sites,
-        coords:nextProps.coords
-      })
-    console.log(nextProps.sites)
-    console.log(nextProps.coords[0])
-  }
+  // componentWillReceiveProps(nextProps) {
+  //     this.setState({
+  //       sites:nextProps.sites,
+  //       coords:nextProps.coords
+  //     })
+  //   console.log(nextProps.sites.org_coordinates)
+  //   // console.log(nextProps.coords)
+  // }
 
   _goBackHome() {
     this.props.navigator.pop();
   }
 
   _goToMap() {
-    this.props.navigator.push(Router.getRoute('map',{coords:this.state.coords}));
+    this.props.navigator.push(Router.getRoute('map',{sites: this.state.sites}));
   }
 
   render() {
@@ -66,6 +67,7 @@ export default class InfoPage extends React.Component {
               <Text style={styles.testAddress}>{site.org_address_line_1}</Text>
               <Text style={styles.testState}>{site.org_city}</Text>
               <Text style={styles.testCity}>{site.org_state_or_province}</Text>
+              {/* <Text style={styles.testCity}>{site.org_coordinates}</Text> */}
               <Button
                 style={styles.mapButton}
                 styleDisabled={{color: 'red'}}
@@ -99,9 +101,7 @@ const styles = StyleSheet.create({
   },
 
   locationCont: {
-    // borderWidth:1,
     borderRadius:10,
-    // borderColor: '#8E8C8B',
     marginTop:50,
     marginLeft:3,
     marginRight:3,
