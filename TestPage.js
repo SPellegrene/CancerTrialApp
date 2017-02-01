@@ -17,13 +17,17 @@ constructor(props) {
   super(props);
   this.state = {
     data:{
-      diseases: [{
-        preferred_name:'Cancer Name...',
-        brief_summary:'Loading Summary...',
+      trials:[{}],
+        diseases: [{
+          preferred_name:'Cancer Name...',
+          brief_summary:'Loading Summary...',
+        }]
+      ,
+      sites: [{
+        lat:['loading'],
+        lon:['loading']
       }],
-      sites: [{}],
-      coords:[0,1],
-      hospitals:[]
+      coords:[],
     },
     value: '',
     }
@@ -36,10 +40,11 @@ componentDidMount() {
   getInfo(){
    axios.get("https://clinicaltrialsapi.cancer.gov/v1/clinical-trials?diseases.nci_thesaurus_concept_id=" + this.props.route.params.id)
    .then((response) => {
-     console.log(response.data)
+     console.log(response.data.trials[0].diseases)
      let newData = response.data.trials[0];
      let newSites = newData.sites;
-     let newCoords = newData.sites[0].org_coordinates;
+     let newCoords = newSites[0].org_coordinates;
+     console.log(newData)
      console.log(newSites)
      console.log(newCoords)
      this.setState({

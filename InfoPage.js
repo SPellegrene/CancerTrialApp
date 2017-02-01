@@ -25,9 +25,10 @@ export default class InfoPage extends React.Component {
 
   componentDidMount() {
     this.setState({
-     sites: this.props.sites
+     sites: this.props.sites,
+     coords:this.props.coords
     })
-    console.log(this.props.sites[0].org_coordinates)
+    console.log(this.props.coords)
    }
 
 
@@ -45,7 +46,7 @@ export default class InfoPage extends React.Component {
   }
 
   _goToMap() {
-    this.props.navigator.push(Router.getRoute('map',{sites: this.state.sites}));
+    this.props.navigator.push(Router.getRoute('map',{coords: this.state.coords}));
   }
 
   render() {
