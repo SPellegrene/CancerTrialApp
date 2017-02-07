@@ -1,110 +1,82 @@
-import React from 'react';
-import { StyleSheet, View, Text,TextInput, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
+import React, { Component } from 'react';
+import { AppRegistry, StyleSheet, Text, View, Image, TextInput, Dimensions, ScrollView } from 'react-native';
 import HomePage from './HomePage';
-import Button from 'react-native-button';
-import Router from './Router';
-import InfoPage from './InfoPage';
 import axios from 'axios';
+import Router from './Router';
+import Button from 'react-native-button';
+import Icon from './pointing-down.png';
 
-
-export default class TestPage extends React.Component {
+export default class TestPage extends Component {
 
   static route = {
-  title: 'test',
-}
-
-constructor(props) {
-  super(props);
-  this.state = {
-    data:{
-      trials:[{}],
-        diseases: [{
-          preferred_name:'Cancer Name...',
-          brief_summary:'Loading Summary...',
-        }]
-      ,
-      sites: [{
-        lat:['loading'],
-        lon:['loading']
-      }],
-      coords:[],
-    },
-    value: '',
-    }
+    title: 'test',
   }
 
-componentDidMount() {
-  this.getInfo()
-}
+  constructor(props) {
+    super(props);
+    this.state = {
+      cancers: [],
+      value: this.props.route.params.id
+    }
+    console.log(this.state.value)
+  }
 
-  getInfo(){
-   axios.get("https://clinicaltrialsapi.cancer.gov/v1/clinical-trials?diseases.nci_thesaurus_concept_id=" + this.props.route.params.id)
-   .then((response) => {
-     console.log(response.data.trials[0].diseases)
-     let newData = response.data.trials[0];
-     let newSites = newData.sites;
-     let newCoords = newSites[0].org_coordinates;
-     console.log(newData)
-     console.log(newSites)
-     console.log(newCoords)
-     this.setState({
-       data: newData,
-       sites: newSites,
-       coords: newCoords
-   })
-  })
-}
+  componentDidMount(){
+    this.onSearch()
+  }
 
+  onSearch() {
+    axios.get("https://api.seer.cancer.gov/rest/disease/latest?q="+this.state.value+"&api_key=c3cf4524cf1f148637d368fd534e15d3")
+    .then((response) =>{
+      console.log(response.data)
+      this.setState({
+        cancers: response.data.results
+      });
+      console.log(this.state.cancers)
+    })
+    .catch(function (error) {
+      console.log(error);
+    })
+  }
 
-goToInfo() {
-  //pushes to map page and renders the inputted value
-  this.props.navigator.push(Router.getRoute('info',{id: this.state.value, sites: this.state.sites, coords: this.state.coords}));
-}
+    _goBackHome() {
+    this.props.navigator.pop();
+  }
 
-//back button functionality
-_goBackHome() {
-  this.props.navigator.pop();
-}
+  goToInfo(cancer) {
+    // this.state.cancers.map((cancer)=> {
+    //   return (
+        this.props.navigator.push(Router.getRoute('info',{cancers:cancer.id}))
+    //   );
+    // })
+  }
 
+  render() {
+    return (
+      <ScrollView style={styles.dataContainer}>
+        <Text style={styles.sloganStyling}>choose cancer type</Text>
+        <Image
+        style={styles.icon}
+        source={Icon}
+        />
 
-  render(){
-    return(
+        <Button
+          style={styles.button}
+          styleDisabled={{color: 'red'}}
+          onPress={() => this._goBackHome()}>Back
+        </Button>
 
-      <ScrollView style={styles.container}>
-        <Text style= {styles.logoStyling}>Diagnosed?</Text>
-          <Text style={styles.testName}>{this.state.data.diseases[0].preferred_name}</Text>
-          <Text style={styles.testSummary}>{this.state.data.brief_summary}</Text>
-        <Text style={styles.locationText}>Find 2nd Opinions</Text>
-        {/* <Text>It is {response.data}</Text> */}
-        {/* <View style={styles.searchCity}>
-          <TextInput
-            style={styles.textInput}
-            placeholder='Enter Cancer ID #'
-            onChangeText={(city) => this.setState({city})}
-            value={this.state.city}
-          />
+        <View style={styles.nameCont}>
+        <TextInput onChangeText={this.onSearch.bind(this)} />
+        {this.state.cancers.map((cancer)=> {
+          return (
+              <Text
+              key={cancer.name}
+              style={styles.nameStyle}
+              onPress={() => this.goToInfo(cancer)}>{cancer.name}</Text>
+          );
+        })}
         </View>
- */}
-        <View style={styles.searchButton}>
-          <Button
-            style={styles.buttonStyling}
-            styleDisabled={{color: 'red'}}
-            onPress={this.goToInfo.bind(this)}>Search
-          </Button>
-        </View>
-
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.bubble}
-          >
-            <Button
-              style={styles.button}
-              styleDisabled={{color: 'red'}}
-              onPress={() => this._goBackHome()}>Back
-            </Button>
-          </TouchableOpacity>
-        </View>
-
       </ScrollView>
     )
   }
@@ -112,94 +84,51 @@ _goBackHome() {
 
 const styles = StyleSheet.create({
 
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    // alignItems: 'center',
+  dataContainer: {
     flexDirection: 'column',
-    backgroundColor: '#FED69B',
+    backgroundColor:'#FED69B',
   },
 
-
-  logoStyling: {
+  sloganStyling: {
     backgroundColor:'transparent',
-    fontSize:32,
-    color:'white',
-    fontWeight: '300',
-    marginTop:30,
-    alignSelf: 'center'
-  },
-
-  testName: {
-    padding:15,
-    fontWeight:'bold',
-    alignSelf: 'center',
-    marginBottom:10,
+    fontSize:18,
     marginTop:10,
-    fontWeight: '300'
-  },
-
-  testSummary: {
-    padding:10,
-    marginBottom: 50,
-    borderWidth:1,
-    borderRadius:10,
-    borderColor: '#8E8C8B',
-    marginLeft:5,
-    marginRight:5,
-    // width:350
-  },
-
-  locationText: {
-    color:'#8E8C8B',
-    marginBottom:10,
-    alignSelf:'center'
-  },
-
-  searchCity: {
-    flexDirection:'row',
-    marginTop: 30,
-    justifyContent:'center',
-    backgroundColor:'transparent'
-  },
-
-  textInput: {
-    height:40,
-    borderRadius: 10,
-    width:170,
-    textAlign: 'center',
-    backgroundColor:'#F0F0F0',
+    color: 'black',
+    fontWeight: '300',
+    alignSelf:'center',
+    marginTop: 35
   },
 
   button: {
-    width: 80,
+      width: 80,
+      fontSize:22,
+      color:'#8E8C8B',
+      fontWeight: '200',
+      alignSelf: 'flex-end',
+      marginTop:10
+    },
+
+  nameCont: {
+    marginBottom:15,
+    flexDirection: 'column',
+    marginLeft:10,
+    marginRight:10
+  },
+
+  nameStyle: {
     fontSize:22,
-    color:'#8E8C8B',
-    fontWeight: '200',
+    textAlign: 'center',
+    height: 55,
+    marginTop:35,
+    backgroundColor: '#4989B1',
+    color: 'white',
   },
+   icon: {
+     height:40,
+     width:40,
+     alignSelf: 'center',
+     marginTop:25
+   }
 
-  buttonContainer: {
-    flexDirection: 'row',
-    marginVertical: 20,
-    backgroundColor: 'transparent',
-    alignSelf: 'flex-end',
-  },
 
-  searchButton: {
-    alignItems:'center',
-    backgroundColor:'transparent',
-    marginTop:10
-  },
-
-  buttonStyling: {
-    textAlign:'center',
-    fontSize:20,
-    color:'#8E8C8B',
-    borderRadius: 5,
-    fontWeight: '200',
-    borderWidth:1,
-    borderColor:'#8E8C8B',
-    width:80,
-    height:40,
-    paddingTop:6
-  },
 })

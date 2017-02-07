@@ -1,6 +1,6 @@
 #Diagnosed? (In Development)
 ###find your cancer's second opinion
-![](cancergif.gif)
+![](diagnosed2gif.gif)
 
 ###### How it works!
 Enter in your cancer ID and let the Diagnosed app find test trial information and doctors who specialize in testing for that specific cancer all around the US.

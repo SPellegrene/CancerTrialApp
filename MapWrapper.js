@@ -1,17 +1,13 @@
 import React, {Component} from 'react';
 import { StyleSheet, View, Text, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
-import { MapView }  from 'react-native';
-// import MapView from 'react-native-maps';
+// import { MapView }  from 'react-native';
+import MapView from 'react-native-maps';
 import Button from 'react-native-button';
 import Router from './Router';
 import axios from 'axios';
 import InfoPage from './InfoPage';
-import MarkerImg from './MarkerImg.png';
+import MarkerImg from './map.png';
 
-const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-const LATITUDE_DELTA= 0.0922;
-const ASPECT_RATIO = width / height;
-const { width, height } = Dimensions.get('window');
 
 export default class MapWrapper extends React.Component {
 
@@ -22,30 +18,50 @@ export default class MapWrapper extends React.Component {
 constructor(props) {
   super(props);
   this.state = {
-    region:{
-      latitude: this.props.coords.lat,
-      longitude:this.props.coords.lon,
+    name:this.props.coords,
+    coords:[],
+    sites:[],
+    org_coordinates:{
+      lat:'loading',
+      lon: 'loading'
     }
   }
 }
 
 componentDidMount() {
-  this.setState({
-    coords:this.props.coords,
-    latitudeDelta:LATITUDE_DELTA,
-    longitudeDelta:.0922,
-  })
-  console.log(this.state.coords)
+  this.getCoords()
 }
-      // console.log(this.state.org_coordinates);
 
-
-componentWillReceiveProps(nextProps) {
-    this.setState({
-      coords:nextProps.coords
+getCoords() {
+  axios.get('https://clinicaltrialsapi.cancer.gov/v1/clinical-trials?diseases.preferred_name='+this.state.name)
+  .then((response) => {
+    console.log(response.data)
+    // Data transformation
+    let allSites = response.data.trials.map((trial)=>{
+      return trial.sites;
     })
-  console.log(nextProps.coords)
+    console.log(allSites);
+    // todo:dedupe
+    let mergedSites = allSites.reduce((a,v) =>{
+      return a.concat(v)
+    }, []).filter((site)=> {
+      return site.org_coordinates && site.org_coordinates.lat && site.org_coordinates.lon
+    })
+    console.log(mergedSites);
+
+    this.setState({
+      coords:mergedSites
+    })
+    console.log(this.state.coords)
+  })
 }
+
+componentWillReceiveProps(nextProps){
+    this.setState({
+      coords: nextProps.coords,
+    })
+    console.log(nextProps.coords);
+  }
 
 _goBackHome() {
   this.props.navigator.pop();
@@ -54,67 +70,59 @@ _goBackHome() {
 
   render(){
     return(
-      <View style={styles.map}>
+      <MapView style={styles.map}
+        provider={this.props.provider}
+        style={styles.map}
+        region={{
+          latitude: 39.8282,
+          longitude: -98.5795,
+          latitudeDelta: 0,
+          longitudeDelta: 0
+        }}>
+      {this.props.coords.length === 0 ? null:this.state.coords.map((site, index) => {
+        return (
+          <MapView.Marker
+            key={index}
+            coordinate= {{
+              latitude: site.org_coordinates.lat,
+              longitude: site.org_coordinates.lon,
+              latitudeDelta: .0922,
+              longitudeDelta: .0922
+            }}
+            image={MarkerImg}>
+            {console.log(site.org_coordinates.lat)}
+            {console.log(site.org_coordinates.lon)}
 
-      {/* {this.props.sites && this.props.sites.length > 0 ? this.state.coords.map((coord) => { */}
-        {/* return( */}
-        <MapView
-          // key={coord}
-          style={styles.map}
-          region={{
-            latitude:this.state.region.latitude,
-            longitude:this.state.region.longitude,
-            latitudeDelta:.0922,
-            longitudeDelta:.0922
-          }}
-          >
-          {console.log(this.state.region.latitude)}
-          {console.log(this.state.region.longitude)}
+            <MapView.Callout>
+              <View>
+                <Text>Description</Text>
+              </View>
 
-          {/* {this.props.sites.length === 0 ? this.state.region.map((region) => {
-           return (
-           <MapView.Marker
-          //  onPress={() => this.show()}
-           key = {region.id}
-           coordinate= {{
-             latitude: this.state.region.latitude,
-             longitude: this.state.region.longitude,
-             latitudeDelta: this.state.latitudeDelta,
-             longitudeDelta: this.state.longitudeDelta
-           }}
-           image={MarkerImg}>
-           </MapView.Marker> */}
+            </MapView.Callout>
 
-        </MapView>
-      {/* )
-   }): null } */}
-
+          </MapView.Marker>
+        )
+      })}
         <Button
           style={styles.button}
           styleDisabled={{color: 'red'}}
           onPress={() => this._goBackHome()}>Back
         </Button>
-
-
-      </View>
+      </MapView>
     )
   }
 }
 
-// MapWrapper.propTypes = {
-//   provider: MapView.ProviderPropType
-// };
+MapWrapper.propTypes = {
+  provider: MapView.ProviderPropType
+};
 
 const styles = StyleSheet.create({
 
-  // mapCont:{
-  //   flexDirection: 'column'
-  // },
-
     map: {
       ...StyleSheet.absoluteFillObject,
-      // height:500
     },
+
     button: {
       fontSize:22,
       color:'#8E8C8B',
@@ -122,5 +130,4 @@ const styles = StyleSheet.create({
       marginTop:20,
       backgroundColor: 'transparent'
     },
-
 })

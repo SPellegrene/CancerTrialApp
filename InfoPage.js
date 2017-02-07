@@ -1,12 +1,11 @@
 import React from 'react';
-import { StyleSheet, View, Text, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, Dimensions, TouchableOpacity, ScrollView, Image } from 'react-native';
 import TestPage from './TestPage';
 import axios from 'axios';
 import Button from 'react-native-button';
-import removeTrialSitesOutsideArea from './removeTrialSitesOutsideArea';
 import Router from './Router';
 import Autolink from 'react-native-autolink';
-
+import Arrow from './down-arrow-sketch.png';
 
 export default class InfoPage extends React.Component {
 
@@ -14,182 +13,156 @@ export default class InfoPage extends React.Component {
     title: 'info'
   }
 
-
   constructor(props) {
     super(props);
     this.state = {
-        sites: this.props.sites,
-        coords:this.props.coords
+      info: {
+        data:this.props.cancers,
+        definition:[{
+          value: 'loading...'
+        }],
+        treatment:[{
+          value: 'loading...'
+        }],
+        mortality:[{
+          value: 'loading...'
+        }],
       }
     }
+    console.log(this.state.info)
+  }
 
   componentDidMount() {
-    this.setState({
-     sites: this.props.sites,
-     coords:this.props.coords
-    })
-    console.log(this.props.coords)
+    this.getInfo()
    }
 
 
-  // componentWillReceiveProps(nextProps) {
-  //     this.setState({
-  //       sites:nextProps.sites,
-  //       coords:nextProps.coords
-  //     })
-  //   console.log(nextProps.sites.org_coordinates)
-  //   // console.log(nextProps.coords)
-  // }
+  getInfo() {
+      axios.get("https://api.seer.cancer.gov/rest/disease/latest/id/"+this.state.info.data+"?api_key=c3cf4524cf1f148637d368fd534e15d3")
+      .then((response) => {
+        this.setState({
+          info: response.data
+      })
+      console.log(this.state.info)
+    })
+  }
 
   _goBackHome() {
     this.props.navigator.pop();
   }
 
   _goToMap() {
-    this.props.navigator.push(Router.getRoute('map',{coords: this.state.coords}));
+    this.props.navigator.push(Router.getRoute('map', {coords:this.state.info.name}));
   }
 
-  render() {
-      return(
-        <ScrollView style={styles.dataContainer}>
+render() {
+  return(
+    <ScrollView style={styles.dataContainer}>
 
-        {this.props.sites && this.props.sites.length > 0 ? this.state.sites.map((site) => {
-          return(
-            <View
-            key={site.id}
-            style={styles.locationCont}>
-              <Text style={styles.testDoc}>Dr. {site.contact_name}</Text>
-              <Text style={styles.testName}>{site.org_name}</Text>
-              <Autolink
-              style={styles.testPhone}
-              linkStyle={styles.testPhone}
-              text={site.contact_phone}
-              />
-              <Text style={styles.testAddress}>{site.org_address_line_1}</Text>
-              <Text style={styles.testState}>{site.org_city}</Text>
-              <Text style={styles.testCity}>{site.org_state_or_province}</Text>
-              {/* <Text style={styles.testCity}>{site.org_coordinates}</Text> */}
-              <Button
-                style={styles.mapButton}
-                styleDisabled={{color: 'red'}}
-                onPress={() => this._goToMap()}>Press for Map
-              </Button>
-              <TouchableOpacity
-                  style={styles.bubble}
-                >
-                  <Button
-                    style={styles.button}
-                    styleDisabled={{color: 'red'}}
-                    onPress={() => this._goBackHome()}>Back
-                  </Button>
-                </TouchableOpacity>
+      <Text style={styles.cancerName}>{this.state.info.name}</Text>
 
-            </View>
-            )
-          }): null }
+      <Button
+        style={styles.mapButton}
+        styleDisabled={{color: 'red'}}
+        onPress={() => this._goToMap()}>find second opinion
+      </Button>
+
+      <Image
+      style={styles.icon}
+      source={Arrow}
+      />
+      <Text style={styles.learnWord}>learn some more</Text>
+      <View style={styles.infoCont}>
+        <Text style={styles.cancerDesc}>{this.state.info.definition[0].value}</Text>
+      </View>
+      <Text style={styles.learnWord}>common treatment</Text>
+      <View style={styles.infoCont}>
+        <Text style={styles.cancerDesc}>{this.state.info.treatment[0].value}</Text>
+      </View>
+      <Text style={styles.learnWord}>diagnosis info</Text>
+      <View style={styles.infoCont}>
+        <Text style={styles.cancerDesc}>{this.state.info.mortality[0].value}</Text>
+      </View>
 
 
-        </ScrollView>
-      )
-    }
+      <Button
+        style={styles.button}
+        styleDisabled={{color: 'red'}}
+        onPress={() => this._goBackHome()}>Back
+      </Button>
+
+    </ScrollView>
+  )
   }
+}
 
 const styles = StyleSheet.create({
 
   dataContainer: {
     flexDirection: 'column',
-    backgroundColor:'#FED69B'
+    backgroundColor:'#FED69B',
   },
 
-  locationCont: {
-    borderRadius:10,
-    marginTop:50,
-    marginLeft:3,
-    marginRight:3,
-    backgroundColor: '#4989B1',
-    marginBottom:10
+  infoCont: {
+    backgroundColor:'#4989B1',
+    marginTop:35,
+    alignItems:'center',
+    marginLeft:5,
+    marginRight:5
+  },
+
+  cancerDesc: {
+    color:'white',
+    fontSize:22,
+    padding:15
+  },
+
+  learnWord:{
+    color:'black',
+    alignSelf: 'center',
+    marginTop:25,
+    fontSize:18,
+    fontWeight:'200'
+  },
+
+  cancerName: {
+    color:'white',
+    marginTop:35,
+    marginLeft:10,
+    marginRight:10,
+    fontSize:28,
+    alignSelf: 'center',
+    textAlign: 'center'
   },
 
   button: {
-    width: 80,
-    fontSize:22,
-    color:'white',
-    fontWeight: '200',
-    marginTop:20,
-    alignSelf:'flex-end'
-  },
+      width: 80,
+      fontSize:22,
+      color:'#8E8C8B',
+      fontWeight: '200',
+      alignSelf: 'flex-end',
+      marginBottom: 30,
+      marginTop:20
+    },
 
   mapButton: {
-    width: 80,
-    flex:1,
-    flexDirection:'row',
-    alignSelf:'center',
-    fontSize:18,
-    color:'white',
-    fontWeight: '200',
-    marginTop:15,
-    marginBottom:10,
-    borderWidth:1,
-    borderRadius:10,
-    borderColor:'white'
-  },
+      width: 80,
+      borderWidth:1,
+      borderRadius:10,
+      fontSize:18,
+      color:'black',
+      fontWeight: '300',
+      alignSelf: 'center',
+      marginTop:25,
+      padding:5
+    },
 
-  testName: {
-    fontSize:18,
-    alignSelf: 'center',
-    textAlign: 'center',
-    marginTop:20,
-    fontWeight: '300',
-  },
+    icon: {
+      height:85,
+      width:85,
+      alignSelf:'center',
+      marginTop:30
+    }
 
-  testDoc: {
-    fontSize:22,
-    // fontWeight: 'bold',
-    alignSelf: 'center',
-    textAlign: 'center',
-    marginTop:20,
-    fontWeight: '300',
-  },
 
-  testPhone: {
-    padding:15,
-    fontWeight:'bold',
-    alignSelf: 'center',
-    marginBottom:10,
-    fontSize:32,
-    marginTop:10,
-    color:'white',
-    fontWeight: '200',
-  },
-
-  testAddress: {
-    alignSelf: 'center',
-    marginTop:20,
-    fontWeight: '300',
-  },
-
-  testCity: {
-    alignSelf: 'center',
-    marginBottom:5,
-    fontWeight: '300',
-  },
-
-  testState: {
-    alignSelf: 'center',
-    fontWeight: '300',
-  },
-
-  testCountry: {
-    alignSelf: 'center',
-    marginBottom:10
-  },
-
-  testSummary: {
-    padding:10,
-    marginBottom: 200,
-    borderWidth:1,
-    borderRadius:10,
-    borderColor: '#8E8C8B',
-    width:350
-  }
 })

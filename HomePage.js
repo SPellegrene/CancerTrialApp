@@ -34,7 +34,7 @@ export default class HomePage extends Component {
       <View style={styles.mainContainer}>
         <View style={styles.viewStyling}>
           <Image className="LandingImg"
-            source={require('./sunrise.jpg')}
+            source={require('./hands-orange.png')}
             style={styles.landingImg}
           />
           <Text style={styles.logoStyling}>Diagnosed?</Text>
@@ -44,7 +44,7 @@ export default class HomePage extends Component {
       <View style={styles.searchDisease}>
         <TextInput
           style={styles.textInput}
-          placeholder='Enter Cancer ID #'
+          placeholder='ex. Lung...'
           onChangeText={(value) => this.setState({value})}
           value={this.state.value}
         />
@@ -93,7 +93,8 @@ const styles = StyleSheet.create({
 
   landingImg: {
     position:'absolute',
-    width:600
+    width:400,
+    height:700
   },
 
   searchDisease: {
