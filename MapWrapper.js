@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
 import { StyleSheet, View, Text, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
-// import { MapView }  from 'react-native';
 import MapView from 'react-native-maps';
 import Button from 'react-native-button';
 import Router from './Router';
 import axios from 'axios';
+import Autolink from 'react-native-autolink';
 import InfoPage from './InfoPage';
 import MarkerImg from './map.png';
 
@@ -24,7 +24,7 @@ constructor(props) {
     org_coordinates:{
       lat:'loading',
       lon: 'loading'
-    }
+    },
   }
 }
 
@@ -40,33 +40,22 @@ getCoords() {
     let allSites = response.data.trials.map((trial)=>{
       return trial.sites;
     })
-    console.log(allSites);
     // todo:dedupe
-    let mergedSites = allSites.reduce((a,v) =>{
+    let mergedSites = allSites.reduce((a,v) => {
       return a.concat(v)
     }, []).filter((site)=> {
       return site.org_coordinates && site.org_coordinates.lat && site.org_coordinates.lon
     })
-    console.log(mergedSites);
-
     this.setState({
-      coords:mergedSites
+      coords:mergedSites,
     })
     console.log(this.state.coords)
   })
 }
 
-componentWillReceiveProps(nextProps){
-    this.setState({
-      coords: nextProps.coords,
-    })
-    console.log(nextProps.coords);
-  }
-
 _goBackHome() {
   this.props.navigator.pop();
 }
-
 
   render(){
     return(
@@ -81,6 +70,7 @@ _goBackHome() {
         }}>
       {this.props.coords.length === 0 ? null:this.state.coords.map((site, index) => {
         return (
+
           <MapView.Marker
             key={index}
             coordinate= {{
@@ -90,17 +80,23 @@ _goBackHome() {
               longitudeDelta: .0922
             }}
             image={MarkerImg}>
-            {console.log(site.org_coordinates.lat)}
-            {console.log(site.org_coordinates.lon)}
 
-            <MapView.Callout>
-              <View>
-                <Text>Description</Text>
-              </View>
+            <MapView.Callout style={styles.calloutCont}>
+              <Text style={styles.docName}>Dr. {site.contact_name}</Text>
+              <Text style={styles.orgName}>{site.org_name}</Text>
 
+              <Autolink
+              style={styles.orgPhone}
+              linkStyle={styles.orgPhone}
+              text={site.contact_phone}
+              />
+
+              <Text style={styles.orgLoc}>{site.org_address_line_1}</Text>
+              <Text style={styles.orgLoc2}>{site.org_city}</Text>
+              <Text style={styles.orgLoc2}>{site.org_state_or_province}</Text>
             </MapView.Callout>
 
-          </MapView.Marker>
+        </MapView.Marker>
         )
       })}
         <Button
@@ -121,6 +117,49 @@ const styles = StyleSheet.create({
 
     map: {
       ...StyleSheet.absoluteFillObject,
+    },
+
+    calloutCont: {
+      height:200,
+      width:250,
+      backgroundColor:'#4989B1',
+      flexDirection: 'column'
+    },
+
+    docName: {
+      color:'white',
+      fontSize:18,
+      alignSelf: 'center',
+      padding:1
+    },
+
+    orgName: {
+      color:'white',
+      fontSize:16,
+      marginTop:5,
+      alignSelf: 'center',
+      padding:1
+    },
+
+    orgPhone: {
+      color:'#FED69B',
+      fontSize:22,
+      alignSelf:'center',
+      marginTop:15,
+      marginBottom:5
+    },
+
+    orgLoc: {
+      color:'white',
+      fontSize:12,
+      alignSelf:'center',
+      marginTop:10
+    },
+
+    orgLoc2: {
+      color:'white',
+      fontSize:12,
+      alignSelf:'center',
     },
 
     button: {
