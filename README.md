@@ -3,18 +3,18 @@
 ![](diagnosed2gif.gif)
 
 ###### How it works!
-Enter in your cancer ID and let the Diagnosed app find test trial information and doctors who specialize in testing for that specific cancer all around the US.
+Enter your cancer and let the Diagnosed app find detailed information and doctors who specialize in testing for that specific cancer all around the United States.
 
 ###### About
-The Diagnosed app is a cancer test trial finding app built for cancer patients seeking a second opinion. Created and developed by [Sam Pellegrene](http://sammypelly.com/). Once a patient enters their cancer ID, they are given test trial information, the phone number, address, and name of the Doctor to ensure they have all the information they need.
+The Diagnosed app is a cancer test trial finding app built for cancer patients seeking a second opinion. Created and developed by [Sam Pellegrene](http://sammypelly.com/). Once a patient enters their cancer, they are given disease information, phone number, address, and name of the Doctor to ensure they have valuable information as quickly as possible.
 
 ###### Mission
-To provide accurate information for all cancer patients seeking to find a second opinion.
+To provide a simple and stress free way for cancer patients to find a second opinion.
 
 ###### Tech Stack
 
 * React Native / JavaScript
-* Clinical Trials API
+* National Cancer Institute API
 * Flexbox (responsive design)
 
 
