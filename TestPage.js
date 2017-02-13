@@ -46,7 +46,7 @@ export default class TestPage extends Component {
   goToInfo(cancer) {
     // this.state.cancers.map((cancer)=> {
     //   return (
-        this.props.navigator.push(Router.getRoute('info',{cancers:cancer.id}))
+        this.props.navigator.push(Router.getRoute('info',{cancers:cancer}))
     //   );
     // })
   }

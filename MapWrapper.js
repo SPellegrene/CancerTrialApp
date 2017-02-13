@@ -7,7 +7,7 @@ import axios from 'axios';
 import Autolink from 'react-native-autolink';
 import InfoPage from './InfoPage';
 import MarkerImg from './map.png';
-
+import lodash from 'lodash';
 
 export default class MapWrapper extends React.Component {
 
@@ -35,12 +35,14 @@ componentDidMount() {
 getCoords() {
   axios.get('https://clinicaltrialsapi.cancer.gov/v1/clinical-trials?diseases.preferred_name='+this.state.name)
   .then((response) => {
-    console.log(response.data)
-    // Data transformation
+
     let allSites = response.data.trials.map((trial)=>{
       return trial.sites;
+      _.uniqueBy(allSites, function(trial) {
+        return trial.sites
+      })
     })
-    // todo:dedupe
+
     let mergedSites = allSites.reduce((a,v) => {
       return a.concat(v)
     }, []).filter((site)=> {
@@ -49,7 +51,13 @@ getCoords() {
     this.setState({
       coords:mergedSites,
     })
+
+    //For cancers with no coordinates in the database
+    if(this.state.coords < 1){
+      alert('We are working hard to find testing locations for this cancer. Please try back later.')
+    }
     console.log(this.state.coords)
+    console.log(allSites);
   })
 }
 
@@ -82,18 +90,18 @@ _goBackHome() {
             image={MarkerImg}>
 
             <MapView.Callout style={styles.calloutCont}>
-              <Text style={styles.docName}>Dr. {site.contact_name}</Text>
-              <Text style={styles.orgName}>{site.org_name}</Text>
+              <Text style={styles.docName}>{site.contact_name && site.contact_name.length>0 ? site.contact_name : null}</Text>
+              <Text style={styles.orgName}>{site.org_name && site.org_name.length>0 ? site.org_name : null}</Text>
 
               <Autolink
               style={styles.orgPhone}
               linkStyle={styles.orgPhone}
-              text={site.contact_phone}
+              text={site.org_phone && site.org_phone.length>0 ? site.org_phone: 'no phone available'}
               />
 
-              <Text style={styles.orgLoc}>{site.org_address_line_1}</Text>
-              <Text style={styles.orgLoc2}>{site.org_city}</Text>
-              <Text style={styles.orgLoc2}>{site.org_state_or_province}</Text>
+              <Text style={styles.orgLoc}>{site.org_address_line_1 && site.org_address_line_1.length>0 ? site.org_address_line_1 : null}</Text>
+              <Text style={styles.orgLoc2}>{site.org_city && site.org_city.length>0 ? site.org_city : null}</Text>
+              <Text style={styles.orgLoc2}>{site.org_state_or_province && site.org_state_or_province.length>0 ? site.org_state_or_province : null}</Text>
             </MapView.Callout>
 
         </MapView.Marker>
@@ -120,7 +128,7 @@ const styles = StyleSheet.create({
     },
 
     calloutCont: {
-      height:200,
+      height:250,
       width:250,
       backgroundColor:'#4989B1',
       flexDirection: 'column'
@@ -138,6 +146,7 @@ const styles = StyleSheet.create({
       fontSize:16,
       marginTop:5,
       alignSelf: 'center',
+      textAlign: 'center',
       padding:1
     },
 

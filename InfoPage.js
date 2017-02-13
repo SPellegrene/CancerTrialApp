@@ -16,20 +16,20 @@ export default class InfoPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      data:this.props.cancers,
       info: {
-        data:this.props.cancers,
         definition:[{
-          value: 'loading...'
+          value: 'loading'
         }],
         treatment:[{
-          value: 'loading...'
+          value: 'loading'
         }],
         mortality:[{
-          value: 'loading...'
+          value: 'loading'
         }],
       }
     }
-    console.log(this.state.info)
+    console.log(this.state.data)
   }
 
   componentDidMount() {
@@ -38,12 +38,12 @@ export default class InfoPage extends React.Component {
 
 
   getInfo() {
-      axios.get("https://api.seer.cancer.gov/rest/disease/latest/id/"+this.state.info.data+"?api_key=c3cf4524cf1f148637d368fd534e15d3")
-      .then((response) => {
-        this.setState({
-          info: response.data
+    axios.get("https://api.seer.cancer.gov/rest/disease/latest/id/"+this.state.data.id+"?api_key=c3cf4524cf1f148637d368fd534e15d3")
+    .then((response) => {
+      this.setState({
+        info: response.data
       })
-      console.log(this.state.info)
+    console.log(this.state.info)
     })
   }
 
@@ -52,7 +52,7 @@ export default class InfoPage extends React.Component {
   }
 
   _goToMap() {
-    this.props.navigator.push(Router.getRoute('map', {coords:this.state.info.name}));
+    this.props.navigator.push(Router.getRoute('map', {coords:this.state.data.name}));
   }
 
 render() {
@@ -73,15 +73,15 @@ render() {
       />
       <Text style={styles.learnWord}>learn some more</Text>
       <View style={styles.infoCont}>
-        <Text style={styles.cancerDesc}>{this.state.info.definition[0].value}</Text>
+        <Text style={styles.cancerDesc}>{this.state.info.definition && this.state.info.definition.length>0 ? this.state.info.definition[0].value : 'no description available at this moment' }</Text>
       </View>
       <Text style={styles.learnWord}>common treatment</Text>
       <View style={styles.infoCont}>
-        <Text style={styles.cancerDesc}>{this.state.info.treatment[0].value}</Text>
+        <Text style={styles.cancerDesc}>{this.state.info.treatment && this.state.info.treatment.length>0 ? this.state.info.treatment[0].value : 'no treatment info'}</Text>
       </View>
       <Text style={styles.learnWord}>diagnosis info</Text>
       <View style={styles.infoCont}>
-        <Text style={styles.cancerDesc}>{this.state.info.mortality[0].value}</Text>
+        <Text style={styles.cancerDesc}>{this.state.info.mortality && this.state.info.mortality.length>0 ? this.state.info.mortality[0].value : 'no diagnosis info' }</Text>
       </View>
 
 
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   cancerDesc: {
     color:'white',
     fontSize:22,
-    padding:15
+    padding:15,
   },
 
   learnWord:{
