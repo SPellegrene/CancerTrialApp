@@ -6,6 +6,8 @@ import Button from 'react-native-button';
 import Router from './Router';
 import Autolink from 'react-native-autolink';
 import Arrow from './down-arrow-sketch.png';
+import Sep from './medical.png';
+import Rib from './ribbon.png';
 
 export default class InfoPage extends React.Component {
 
@@ -58,6 +60,11 @@ export default class InfoPage extends React.Component {
 render() {
   return(
     <ScrollView style={styles.dataContainer}>
+    <Button
+      style={styles.button}
+      styleDisabled={{color: 'red'}}
+      onPress={() => this._goBackHome()}>Back
+    </Button>
 
       <Text style={styles.cancerName}>{this.state.info.name}</Text>
 
@@ -75,10 +82,18 @@ render() {
       <View style={styles.infoCont}>
         <Text style={styles.cancerDesc}>{this.state.info.definition && this.state.info.definition.length>0 ? this.state.info.definition[0].value : 'no description available at this moment' }</Text>
       </View>
+      <Image
+      style={styles.ast}
+      source={Rib}
+      />
       <Text style={styles.learnWord}>common treatment</Text>
       <View style={styles.infoCont}>
         <Text style={styles.cancerDesc}>{this.state.info.treatment && this.state.info.treatment.length>0 ? this.state.info.treatment[0].value : 'no treatment info'}</Text>
       </View>
+      <Image
+      style={styles.ast}
+      source={Sep}
+      />
       <Text style={styles.learnWord}>diagnosis info</Text>
       <View style={styles.infoCont}>
         <Text style={styles.cancerDesc}>{this.state.info.mortality && this.state.info.mortality.length>0 ? this.state.info.mortality[0].value : 'no diagnosis info' }</Text>
@@ -104,7 +119,7 @@ const styles = StyleSheet.create({
   },
 
   infoCont: {
-    backgroundColor:'#4989B1',
+    backgroundColor:'#E2FDFF',
     marginTop:35,
     alignItems:'center',
     marginLeft:5,
@@ -112,27 +127,29 @@ const styles = StyleSheet.create({
   },
 
   cancerDesc: {
-    color:'white',
+    color:'black',
     fontSize:22,
     padding:15,
+    borderRadius:5
   },
 
   learnWord:{
     color:'black',
     alignSelf: 'center',
     marginTop:25,
-    fontSize:18,
+    fontSize:22,
     fontWeight:'200'
   },
 
   cancerName: {
-    color:'white',
-    marginTop:35,
+    color:'black',
+    marginTop:10,
     marginLeft:10,
     marginRight:10,
     fontSize:28,
     alignSelf: 'center',
-    textAlign: 'center'
+    textAlign: 'center',
+    fontWeight: '200',
   },
 
   button: {
@@ -140,7 +157,7 @@ const styles = StyleSheet.create({
       fontSize:22,
       color:'#8E8C8B',
       fontWeight: '200',
-      alignSelf: 'flex-end',
+      alignSelf: 'flex-start',
       marginBottom: 30,
       marginTop:20
     },
@@ -162,6 +179,19 @@ const styles = StyleSheet.create({
       width:85,
       alignSelf:'center',
       marginTop:30
+    },
+
+    dot: {
+      flexDirection: 'row',
+      alignSelf: 'center',
+      marginTop:20
+    },
+
+    ast: {
+      marginTop:20,
+      alignSelf: 'center',
+      height:60,
+      width:60
     }
 
 

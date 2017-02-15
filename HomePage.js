@@ -29,12 +29,12 @@ export default class HomePage extends Component {
   }
 
 
-  render(){
+  render() {
     return(
       <View style={styles.mainContainer}>
         <View style={styles.viewStyling}>
           <Image className="LandingImg"
-            source={require('./hands-orange.png')}
+            source={require('./helpingsketch.jpg')}
             style={styles.landingImg}
           />
           <Text style={styles.logoStyling}>Diagnosed?</Text>
@@ -67,12 +67,12 @@ export default class HomePage extends Component {
 const styles = StyleSheet.create({
 
   mainContainer: {
-    justifyContent:'center',
+    flexDirection:'column'
   },
 
   viewStyling: {
-    flexDirection:'column',
     alignItems:'center',
+    flexDirection:'column'
   },
 
   logoStyling: {
@@ -93,13 +93,12 @@ const styles = StyleSheet.create({
 
   landingImg: {
     position:'absolute',
-    width:400,
     height:700
   },
 
   searchDisease: {
     flexDirection:'row',
-    marginTop: 30,
+    marginTop: 50,
     justifyContent:'center',
     backgroundColor:'transparent'
   },
@@ -115,7 +114,7 @@ const styles = StyleSheet.create({
 
   goButton: {
     alignSelf:'center',
-    marginTop:325,
+    marginTop:200,
     // marginLeft:150,
     backgroundColor:'transparent',
     width:70,
@@ -126,11 +125,11 @@ const styles = StyleSheet.create({
     position:'relative',
     textAlign:'center',
     fontSize:32,
-    color:'#FFFFFF',
+    color:'white',
     borderRadius: 5,
     fontWeight: '200',
     borderWidth:1,
-    borderColor:'#E2E2E2',
+    borderColor:'white',
     width:80,
     height:60,
     padding:10

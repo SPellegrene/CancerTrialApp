@@ -1,6 +1,6 @@
 #Diagnosed? (In Development)
 ###find your cancer's second opinion
-![](Diagnosedgif.gif)
+![](newcancergif.gif)
 
 ###### How it works!
 Enter your cancer and let *Diagnosed* find detailed information and doctors who specialize in testing for that specific cancer all around the United States.

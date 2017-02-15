@@ -4,7 +4,7 @@ import HomePage from './HomePage';
 import axios from 'axios';
 import Router from './Router';
 import Button from 'react-native-button';
-import Icon from './pointing-down.png';
+import Icon from './arrows.png';
 
 export default class TestPage extends Component {
 
@@ -54,17 +54,18 @@ export default class TestPage extends Component {
   render() {
     return (
       <ScrollView style={styles.dataContainer}>
+      <Button
+        style={styles.button}
+        styleDisabled={{color: 'red'}}
+        onPress={() => this._goBackHome()}>Back
+      </Button>
+
         <Text style={styles.sloganStyling}>choose cancer type</Text>
         <Image
         style={styles.icon}
         source={Icon}
         />
 
-        <Button
-          style={styles.button}
-          styleDisabled={{color: 'red'}}
-          onPress={() => this._goBackHome()}>Back
-        </Button>
 
         <View style={styles.nameCont}>
         <TextInput onChangeText={this.onSearch.bind(this)} />
@@ -104,12 +105,12 @@ const styles = StyleSheet.create({
       fontSize:22,
       color:'#8E8C8B',
       fontWeight: '200',
-      alignSelf: 'flex-end',
-      marginTop:10
+      alignSelf: 'flex-start',
+      marginTop:20
     },
 
   nameCont: {
-    marginBottom:15,
+    marginBottom:10,
     flexDirection: 'column',
     marginLeft:10,
     marginRight:10
@@ -120,8 +121,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     height: 55,
     marginTop:35,
-    backgroundColor: '#4989B1',
-    color: 'white',
+    backgroundColor: '#E2FDFF',
+    color: 'black',
   },
    icon: {
      height:40,

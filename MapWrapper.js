@@ -54,7 +54,7 @@ getCoords() {
 
     //For cancers with no coordinates in the database
     if(this.state.coords < 1){
-      alert('We are working hard to find testing locations for this cancer. Please try back later.')
+      alert('The National Cancer Institute does not have any locations on record for this cancer. Please call 1-800-422-6237 to provide feedback.')
     }
     console.log(this.state.coords)
     console.log(allSites);
@@ -160,14 +160,14 @@ const styles = StyleSheet.create({
 
     orgLoc: {
       color:'white',
-      fontSize:12,
+      fontSize:16,
       alignSelf:'center',
       marginTop:10
     },
 
     orgLoc2: {
       color:'white',
-      fontSize:12,
+      fontSize:16,
       alignSelf:'center',
     },
 
@@ -176,6 +176,7 @@ const styles = StyleSheet.create({
       color:'#8E8C8B',
       fontWeight: '300',
       marginTop:20,
-      backgroundColor: 'transparent'
+      backgroundColor: 'transparent',
+      alignSelf: 'flex-start'
     },
 })
