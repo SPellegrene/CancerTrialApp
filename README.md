@@ -1,5 +1,5 @@
-#Diagnosed? (In Development)
-###find your cancer's second opinion
+# Diagnosed? (In Development)
+### find your cancer's second opinion
 ![](newcancergif.gif)
 
 ###### How it works!
